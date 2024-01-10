@@ -1,0 +1,46 @@
+name: PlatformIO CI
+
+on:
+  pull_request:
+  push:
+    paths:
+      - "examples/**"
+      - "src/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example:
+          [
+            SerialExample,
+            TFT_Rainbow,
+            arduino_gfx_demo,
+            factory,
+            lv_demos,
+            nes,
+            ota,
+            sd,
+            tft,
+            touch_test,
+            usb_hid_pad,
+            T-Display-S3-MIDI,
+          ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Run PlatformIO
+        run: pio run -e  ${{ matrix.example }}
